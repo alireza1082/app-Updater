@@ -113,6 +113,8 @@ def apkpure(PackageName, VersionName):
     try:
         url = "https://m.apkpure.com"
         resp = requests.get(url, timeout=3)
+        if resp.status_code == 403:
+            return
     except:
         print("apkpure is note reachable.")
         return
@@ -135,8 +137,8 @@ def apkpure(PackageName, VersionName):
             # print newest versionName exists on web of an app
             if web_Version > app_Version:
                 print(PackageName.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
-        except :
-            print("an error occurred on " + PackageName + " in checking apkpure")
+    except :
+        print("an error occurred on " + PackageName + " in checking apkpure")
 
 
 def myket(PackageName, VersionName):
