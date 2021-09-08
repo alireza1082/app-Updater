@@ -8,7 +8,9 @@ from clint.textui import progress
 
 def get_apk_from_myket(pkg):
     url = "https://one-api.ir/myket/"
-    parameters = {'token': '883005:60fbc9895b4b74.59957594',
+    # one-api token
+    token = '******'
+    parameters = {'token': token,
                   'action': 'download',
                   'pack': pkg
                   }
@@ -43,7 +45,9 @@ def get_apk_from_myket(pkg):
 
 def get_apk_from_cafe_bazaar(pkg):
     url = "https://one-api.ir/cafebazaar/"
-    parameters = {'token': '883005:60fbc9895b4b74.59957594',
+    # one-api token
+    token = '******'
+    parameters = {'token': token,
                   'action': 'download',
                   'pack': pkg
                   }
