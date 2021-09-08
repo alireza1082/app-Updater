@@ -87,6 +87,7 @@ def cafebazaar(PackageName, VersionName):
 def googleplay(PackageName, VersionName):
     google_url = "https://play.google.com/store/apps/details?id=" + str(PackageName)
     serverName = "google play"
+    app_Version = list(map(int, VersionName.split('.')))
     try :
         google_resp = requests.get(google_url.rstrip())
         if google_resp.status_code == 404:
@@ -107,12 +108,35 @@ def googleplay(PackageName, VersionName):
 
 
 def apkpure(PackageName, VersionName):
+    app_Version = list(map(int, VersionName.split('.')))
+    serverName = "apkpure"
     try:
         url = "https://m.apkpure.com"
         resp = requests.get(url, timeout=3)
     except:
         print("apkpure is note reachable.")
         return
+    try:
+        url = 'https://m.apkpure.com/store/apps/details?id=' + PackageName
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        if resp.status_code == 404:
+            print(PackageName.strip() + " is not exists on " + serverName)
+        else:
+            tag = soup.find("span", {"itemprop": "version"})
+            version = tag.text.rstrip()
+            if version is None:
+                return
+            # remove excess words
+            newVersion = ''.join((ch if ch in '0123456789.' else '') for ch in version)
+            # build array of versionName split by .
+            web_Version = list(map(int, newVersion.split('.')))
+            print(PackageName.rstrip() + " checked on " + serverName)
+            # print newest versionName exists on web of an app
+            if web_Version > app_Version:
+                print(PackageName.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
+        except :
+            print("an error occurred on " + PackageName + " in checking apkpure")
 
 
 def myket(PackageName, VersionName):
