@@ -137,6 +137,7 @@ def apkpure(PackageName, VersionName):
             # print newest versionName exists on web of an app
             if web_Version > app_Version:
                 print(PackageName.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
+                api.download_from_apkpure(PackageName.rstrip())
     except :
         print("an error occurred on " + PackageName + " in checking apkpure")
 
