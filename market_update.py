@@ -114,9 +114,11 @@ def apkpure(PackageName, VersionName):
         url = "https://m.apkpure.com"
         resp = requests.get(url, timeout=3)
         if resp.status_code == 403:
+            print("you can't reach to apkpure servers")
             return
-    except:
+    except Exception as ex :
         print("apkpure is note reachable.")
+        print(ex)
         return
     try:
         url = 'https://m.apkpure.com/store/apps/details?id=' + PackageName
