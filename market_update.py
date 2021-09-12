@@ -60,6 +60,9 @@ def apk_checker(serverName):
 def cafebazaar(PackageName, VersionName):
     serverName = "cafebaazar"
     url = "https://cafebazaar.ir/app/" + str(PackageName)
+    if VersionName is None:
+        print("VersionName of " + PackageName + " is invalid")
+        return
     try:
         resp = requests.get(url.rstrip())
         # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
@@ -87,8 +90,11 @@ def cafebazaar(PackageName, VersionName):
 def googleplay(PackageName, VersionName):
     google_url = "https://play.google.com/store/apps/details?id=" + str(PackageName)
     serverName = "google play"
-    app_Version = list(map(int, VersionName.split('.')))
+    if VersionName is None:
+        print("VersionName of " + PackageName + " is invalid")
+        return
     try :
+        app_Version = list(map(int, VersionName.split('.')))
         google_resp = requests.get(google_url.rstrip())
         if google_resp.status_code == 404:
             print(PackageName.strip() + " is not exists on " + serverName)
@@ -110,6 +116,9 @@ def googleplay(PackageName, VersionName):
 def apkpure(PackageName, VersionName):
     app_Version = list(map(int, VersionName.split('.')))
     serverName = "apkpure"
+    if VersionName is None:
+        print("VersionName of " + PackageName + " is invalid")
+        return
     try:
         url = "https://m.apkpure.com"
         resp = requests.get(url, timeout=3)
