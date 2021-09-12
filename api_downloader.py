@@ -37,7 +37,7 @@ def get_apk_from_myket(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize(pkg + '.apk') == total_length:
+    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
@@ -74,7 +74,7 @@ def get_apk_from_cafe_bazaar(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize(pkg + '.apk') == total_length:
+    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
@@ -109,7 +109,7 @@ def download_from_apkpure(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize(pkg + '.apk') == total_length:
+    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")

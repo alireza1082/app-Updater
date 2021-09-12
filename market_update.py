@@ -149,8 +149,9 @@ def apkpure(PackageName, VersionName):
             if web_Version > app_Version:
                 print(PackageName.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
                 api.download_from_apkpure(PackageName.rstrip())
-    except :
+    except Exception as ex :
         print("an error occurred on " + PackageName + " in checking apkpure")
+        print(ex)
 
 
 def myket(PackageName, VersionName):
