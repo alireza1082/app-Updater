@@ -114,7 +114,6 @@ def googleplay(PackageName, VersionName):
 
 
 def apkpure(PackageName, VersionName):
-    app_Version = list(map(int, VersionName.split('.')))
     serverName = "apkpure"
     if VersionName == '':
         print("VersionName of " + PackageName + " is invalid")
@@ -130,6 +129,7 @@ def apkpure(PackageName, VersionName):
         print(ex)
         return
     try:
+        app_Version = list(map(int, VersionName.split('.')))
         url = 'https://m.apkpure.com/store/apps/details?id=' + PackageName
         resp = requests.get(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
