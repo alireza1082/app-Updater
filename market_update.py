@@ -155,7 +155,33 @@ def apkpure(PackageName, VersionName):
 
 
 def myket(PackageName, VersionName):
-    print(4)
+    url = "https://myket.ir/app/"
+    server_name = "myket"
+    if version_name == '':
+        print("VersionName of " + package_name + " is invalid")
+        return
+    try:
+        url = url + package_name
+        # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
+        app_version = list(map(int, version_name.split('.')))
+        resp = requests.get(url)
+        # arrange file by html tags
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        # get version by text of before element
+        version = soup.find(text="نسخه").parent.next_sibling.string
+        version_en = digits.fa_to_en(version)
+        # check version name if has words and remove words
+        new_version = ''.join((ch if ch in '0123456789.' else '') for ch in version_en)
+        # build array of versionName splited by .
+        web_version = list(map(int, new_version.split('.')))
+        print(package_name.rstrip() + " checked on " + server_name)
+        # print newest versionName exists on web of an app
+        if web_version > app_version:
+            print(package_name.rstrip() + ":has an update version on " + server_name + " with version name:" + new_version)
+            api.get_apk_from_myket(package_name.rstrip())
+    except Exception as ex:
+        print(ex)
+        print("an error occurred on " + package_name + " in checking on " + server_name)
 
 
 main()
