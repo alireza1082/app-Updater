@@ -19,6 +19,7 @@ def main():
     # use hashmap for remove duplicate packageNames and get the latest versionName
     print(apk_lists)
     apk_hashmap = {}
+    newPackageName = ""
     try:
         for i in range(len(apk_lists)):
             # receive versionName and packageName from apk by aapt command
@@ -88,6 +89,7 @@ def cafebazaar(package_name, version_name):
 def google_play(package_name, version_name):
     google_url = "https://play.google.com/store/apps/details?id=" + str(package_name)
     serverName = "google play"
+    version = ""
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
         return
@@ -186,5 +188,5 @@ def myket(package_name, version_name):
 
 
 if __name__ == '__main__':
-    # cafebazaar("ir.mci.ecareapp", "5.3.2")
+    # cafebazaar("ir.mci", "5.3.2")
     main()
