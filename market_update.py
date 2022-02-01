@@ -42,8 +42,9 @@ def main():
                 else:
                     # if app is not in list will add
                     apk_hashmap.update(dict({newPackageName: newVersionName}))
-    except:
+    except Exception as ex:
         print("an error occurred on " + newPackageName)
+        print(ex)
     print(apk_hashmap)
     for PackageName, VersionName in apk_hashmap.items():
         apkpure(PackageName, VersionName)
@@ -79,8 +80,9 @@ def cafebazaar(package_name, version_name):
                     package_name.rstrip() + ":has an update version on " + serverName + " with version name:"
                     + newVersion)
                 api.get_apk_from_cafe_bazaar(package_name.rstrip())
-    except Exception as e:
-        print("an error occurred on " + package_name + " in checking cafebazaar" + "\n" + e)
+    except Exception as ex:
+        print("an error occurred on " + package_name + " in checking cafebazaar")
+        print(ex)
 
 
 def google_play(package_name, version_name):
@@ -105,8 +107,9 @@ def google_play(package_name, version_name):
         print(package_name.rstrip() + " checked on " + serverName)
         if web_Version > app_Version:
             print(package_name.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
-    except:
+    except Exception as ex:
         print("an error occurred on " + package_name + " in checking google play")
+        print(ex)
 
 
 def apkpure(package_name, version_name):
@@ -182,6 +185,6 @@ def myket(package_name, version_name):
         print("an error occurred on " + package_name + " in checking on " + server_name)
 
 
-# main()
 if __name__ == '__main__':
-    cafebazaar("ir.mci.ecareapp", "5.3.2")
+    # cafebazaar("ir.mci.ecareapp", "5.3.2")
+    main()

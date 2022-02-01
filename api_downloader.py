@@ -61,7 +61,7 @@ def get_apk_from_cafe_bazaar(pkg):
         else:
             print("downloading : " + pkg)
     elif response.status_code == 524:
-        print("server timeout occured on " + pkg)
+        print("server timeout occurred on " + pkg)
         return
     elif response.status_code == 503:
         print("The server is temporarily busy")
