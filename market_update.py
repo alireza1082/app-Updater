@@ -18,6 +18,14 @@ def main():
     apk_lists = list(filter(lambda file: file.split('.')[-1] == 'apk', os.listdir(path)))
     # use hashmap for remove duplicate packageNames and get the latest versionName
     print(apk_lists)
+    apk_hashmap = get_apk_hashmap(apk_lists, path=path)
+    print(apk_hashmap)
+    for package_name, version_name in apk_hashmap.items():
+        apkpure(package_name, version_name)
+    print("finished")
+
+
+def get_apk_hashmap(apk_lists, path):
     apk_hashmap = {}
     new_package_name = ""
     try:
@@ -46,10 +54,7 @@ def main():
     except Exception as ex:
         print("an error occurred on " + new_package_name)
         print(ex)
-    print(apk_hashmap)
-    for package_name, version_name in apk_hashmap.items():
-        apkpure(package_name, version_name)
-    print("finished")
+    return apk_hashmap
 
 
 def cafebazaar(package_name, version_name):
@@ -189,5 +194,4 @@ def myket(package_name, version_name):
 
 if __name__ == '__main__':
     # cafebazaar("ir.mci", "5.3.2")
-    apkpure("com.whatsapp", "2.1.1")
-    # main()
+    main()
