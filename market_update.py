@@ -19,41 +19,41 @@ def main():
     # use hashmap for remove duplicate packageNames and get the latest versionName
     print(apk_lists)
     apk_hashmap = {}
-    newPackageName = ""
+    new_package_name = ""
     try:
         for i in range(len(apk_lists)):
             # receive versionName and packageName from apk by aapt command
-            VersionName = os.popen("aapt dump badging " + path + apk_lists[
+            version_name = os.popen("aapt dump badging " + path + apk_lists[
                 i] + "| grep VersionName | sed -e \"s/.*versionName='//\" ""-e \"s/' .*//\"").read()
-            PackageName = os.popen("aapt dump badging " + path + apk_lists[
+            package_name = os.popen("aapt dump badging " + path + apk_lists[
                 i] + " | awk -v FS=\"\'\" \'/package: name=/{print $2}\'").read()
-            newPackageName = str(PackageName).rstrip()
+            new_package_name = str(package_name).rstrip()
             # remove excess words
-            newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName).rstrip()
-            if newVersionName is None:
+            new_version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name).rstrip()
+            if new_version_name is None:
                 continue
             else:
-                if newPackageName in apk_hashmap:
-                    finalVersionName = list(map(int, newVersionName.split('.')))
-                    Version = list(map(int, apk_hashmap[newPackageName].split('.')))
+                if new_package_name in apk_hashmap:
+                    final_version_name = list(map(int, new_version_name.split('.')))
+                    version = list(map(int, apk_hashmap[new_package_name].split('.')))
                     # compare two version apk of an app
-                    if finalVersionName > Version:
+                    if final_version_name > version:
                         # if an apk exists with upper versionName will be changed to upper
-                        apk_hashmap.update(dict({newPackageName: newVersionName}))
+                        apk_hashmap.update(dict({new_package_name: new_version_name}))
                 else:
                     # if app is not in list will add
-                    apk_hashmap.update(dict({newPackageName: newVersionName}))
+                    apk_hashmap.update(dict({new_package_name: new_version_name}))
     except Exception as ex:
-        print("an error occurred on " + newPackageName)
+        print("an error occurred on " + new_package_name)
         print(ex)
     print(apk_hashmap)
-    for PackageName, VersionName in apk_hashmap.items():
-        apkpure(PackageName, VersionName)
+    for package_name, version_name in apk_hashmap.items():
+        apkpure(package_name, version_name)
     print("finished")
 
 
 def cafebazaar(package_name, version_name):
-    serverName = "cafebazaar"
+    server_name = "cafebazaar"
     url = "https://cafebazaar.ir/app/" + str(package_name)
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
@@ -61,25 +61,25 @@ def cafebazaar(package_name, version_name):
     try:
         resp = requests.get(url.rstrip())
         # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
-        app_Version = list(map(int, version_name.split('.')))
+        app_version = list(map(int, version_name.split('.')))
         # arrange file by html tags
         soup = BeautifulSoup(resp.text, features="lxml").find("div", {"class": "AppSubtitles"}).next
         version = soup.text
         print(version)
         if resp.status_code == 404:
-            print(package_name.strip() + " is not exists on " + serverName)
+            print(package_name.strip() + " is not exists on " + server_name)
         elif version is not None:
             version_en = digits.fa_to_en(version.rstrip())
             # check version name if it has words and remove words
-            newVersion = ''.join((ch if ch in '0123456789.' else '') for ch in version_en)
+            new_version = ''.join((ch if ch in '0123456789.' else '') for ch in version_en)
             # build array of versionName split by .
-            web_Version = list(map(int, newVersion.split('.')))
-            print(package_name.rstrip() + " checked on " + serverName)
+            web_version = list(map(int, new_version.split('.')))
+            print(package_name.rstrip() + " checked on " + server_name)
             # print newest versionName exists on web of an app
-            if web_Version > app_Version:
+            if web_version > app_version:
                 print(
-                    package_name.rstrip() + ":has an update version on " + serverName + " with version name:"
-                    + newVersion)
+                    package_name.rstrip() + ":has an update version on " + server_name + " with version name:"
+                    + new_version)
                 api.get_apk_from_cafe_bazaar(package_name.rstrip())
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking cafebazaar")
@@ -88,34 +88,34 @@ def cafebazaar(package_name, version_name):
 
 def google_play(package_name, version_name):
     google_url = "https://play.google.com/store/apps/details?id=" + str(package_name)
-    serverName = "google play"
+    server_name = "google play"
     version = ""
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
         return
     try:
-        app_Version = list(map(int, version_name.split('.')))
+        app_version = list(map(int, version_name.split('.')))
         google_resp = requests.get(google_url.rstrip())
         if google_resp.status_code == 404:
-            print(package_name.strip() + " is not exists on " + serverName)
+            print(package_name.strip() + " is not exists on " + server_name)
         else:
             soup = BeautifulSoup(google_resp.text, 'html.parser')
             version = soup.find(text="Current Version").parent.next_sibling.string
         if version == "Varies with device":
-            print(serverName + " writes Varies with device on version for " + package_name.strip())
+            print(server_name + " writes Varies with device on version for " + package_name.strip())
             return
-        newVersion = ''.join((ch if ch in '0123456789.' else '') for ch in version)
-        web_Version = list(map(int, newVersion.split('.')))
-        print(package_name.rstrip() + " checked on " + serverName)
-        if web_Version > app_Version:
-            print(package_name.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
+        new_version = ''.join((ch if ch in '0123456789.' else '') for ch in version)
+        web_version = list(map(int, new_version.split('.')))
+        print(package_name.rstrip() + " checked on " + server_name)
+        if web_version > app_version:
+            print(package_name.rstrip() + ":has an update on " + server_name + " with version name:" + new_version)
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking google play")
         print(ex)
 
 
 def apkpure(package_name, version_name):
-    serverName = "apkpure"
+    server_name = "apkpure"
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
         return
@@ -130,25 +130,25 @@ def apkpure(package_name, version_name):
         print(ex)
         return
     try:
-        app_Version = list(map(int, version_name.split('.')))
+        app_version = list(map(int, version_name.split('.')))
         url = 'https://m.apkpure.com/store/apps/details?id=' + package_name
         resp = requests.get(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
         if resp.status_code == 404:
-            print(package_name.strip() + " is not exists on " + serverName)
+            print(package_name.strip() + " is not exists on " + server_name)
         else:
             tag = soup.find("span", {"itemprop": "version"})
             version = tag.text.rstrip()
             if version is None:
                 return
             # remove excess words
-            newVersion = ''.join((ch if ch in '0123456789.' else '') for ch in version)
+            new_version = ''.join((ch if ch in '0123456789.' else '') for ch in version)
             # build array of versionName split by .
-            web_Version = list(map(int, newVersion.split('.')))
-            print(package_name.rstrip() + " checked on " + serverName)
+            web_version = list(map(int, new_version.split('.')))
+            print(package_name.rstrip() + " checked on " + server_name)
             # print newest versionName exists on web of an app
-            if web_Version > app_Version:
-                print(package_name.rstrip() + ":has an update on " + serverName + " with version name:" + newVersion)
+            if web_version > app_version:
+                print(package_name.rstrip() + ":has an update on " + server_name + " with version name:" + new_version)
                 api.download_from_apkpure(package_name.rstrip())
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking apkpure")
@@ -189,4 +189,5 @@ def myket(package_name, version_name):
 
 if __name__ == '__main__':
     # cafebazaar("ir.mci", "5.3.2")
-    main()
+    apkpure("com.whatsapp", "2.1.1")
+    # main()
