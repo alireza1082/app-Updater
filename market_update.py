@@ -1,5 +1,7 @@
 # coding= utf-8
 
+__version__ = '1.1.0'
+
 import api_downloader as api
 import os
 import requests
@@ -48,8 +50,9 @@ def arg_parser():
                                      description="script for download new versions of apk files.")
     parser.add_argument('-s', '--serverName', help='choose that server you want to check and download apks from it.',
                         default='cafebazaar')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
     parser.add_argument('-d', '--dir', help='location of apks and new apk downloads')
-    parser.add_argument('-n', '--name', help='append the string to packageName for apk files name')
+    parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
     parser.add_argument('-N', '--Name', help='rename apk file to entered string')
     return parser
