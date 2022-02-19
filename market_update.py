@@ -36,7 +36,7 @@ def main():
         elif server == 'myket':
             myket(package_name, version_name, path=path)
         elif server == 'google_play':
-            google_play(package_name, version_name, path=path)
+            google_play(package_name, version_name)
         else:
             print("downloading with default server cafebazaar")
             cafebazaar(package_name, version_name, path=path)
@@ -223,5 +223,5 @@ def myket(package_name, version_name, path):
 
 
 if __name__ == '__main__':
-    # cafebazaar("ir.mci", "5.3.2")
+    # cafebazaar("com.whatsapp", "2.1.20")
     main()
