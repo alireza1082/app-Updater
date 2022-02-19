@@ -15,12 +15,16 @@ sys.path.append('../')
 
 
 def main():
-    # directory that checks apks on by relative path
     parser = arg_parser()
     args = parser.parse_args()
+    # directory that checks apks on by relative path
     path = args.dir if args.dir else './repo/'
-    file_name = args.name if args.name else ""
+    append = args.string if args.string else ""
     server = args.serverName if args.serverName else ""
+
+    if args.id:
+        single_download(server, args.id, path, append)
+        return
 
     # direct path = '/home/fdroid/market_source/test/repo'
     apk_lists = list(filter(lambda file: file.split('.')[-1] == 'apk', os.listdir(path)))
@@ -32,16 +36,20 @@ def main():
 
     for package_name, version_name in apk_hashmap.items():
         if server == 'apkpure':
-            apkpure(package_name, version_name, path=path)
+            print("downloading with server apkpure")
+            apkpure(package_name, version_name, path=path, string=append)
         elif server == 'cafebazaar':
-            cafebazaar(package_name, version_name, path=path)
+            print("downloading with server cafebazaar")
+            cafebazaar(package_name, version_name, path=path, string=append)
         elif server == 'myket':
-            myket(package_name, version_name, path=path)
+            print("downloading with server myket")
+            myket(package_name, version_name, path=path, string=append)
         elif server == 'google_play':
+            print("downloading with server google_play")
             google_play(package_name, version_name)
         else:
             print("downloading with default server cafebazaar")
-            cafebazaar(package_name, version_name, path=path)
+            cafebazaar(package_name, version_name, path=path, string=append)
     print("finished")
 
 
@@ -49,13 +57,31 @@ def arg_parser():
     parser = argparse.ArgumentParser(prog="Market Updater",
                                      description="script for download new versions of apk files.")
     parser.add_argument('-s', '--serverName', help='choose that server you want to check and download apks from it.',
-                        default='cafebazaar')
+                        default='cafebazaar', nargs=1, choices=['apkpure', 'cafebazaar', 'myket', 'google_play'])
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
-    parser.add_argument('-d', '--dir', help='location of apks and new apk downloads')
+    parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
     parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
     parser.add_argument('-N', '--Name', help='rename apk file to entered string')
     return parser
+
+
+def single_download(server, package_name, path, append):
+    if server == 'apkpure':
+        print("downloading with server apkpure")
+        api.download_from_apkpure(package_name.rstrip(), path=path, string=append)
+    elif server == 'cafebazaar':
+        print("downloading with server cafebazaar")
+        api.get_apk_from_cafe_bazaar(package_name.rstrip(), path=path, string=append)
+    elif server == 'myket':
+        print("downloading with server myket")
+        api.get_apk_from_myket(package_name.rstrip(), path=path, string=append)
+    elif server == 'google_play':
+        print("downloading with server google_play")
+        google_play(package_name, "0")
+    else:
+        print("downloading with default server cafebazaar")
+        api.get_apk_from_cafe_bazaar(package_name.rstrip(), path=path, string=append)
 
 
 def get_apk_hashmap(apk_lists, path):
@@ -90,7 +116,7 @@ def get_apk_hashmap(apk_lists, path):
     return apk_hashmap
 
 
-def cafebazaar(package_name, version_name, path):
+def cafebazaar(package_name, version_name, path, string):
     server_name = "cafebazaar"
     url = "https://cafebazaar.ir/app/" + str(package_name)
     if version_name == '':
@@ -118,7 +144,7 @@ def cafebazaar(package_name, version_name, path):
                 print(
                     package_name.rstrip() + ":has an update version on " + server_name + " with version name:"
                     + new_version)
-                api.get_apk_from_cafe_bazaar(package_name.rstrip(), path=path)
+                api.get_apk_from_cafe_bazaar(package_name.rstrip(), path=path, string=string)
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking cafebazaar")
         print(ex)
@@ -152,7 +178,7 @@ def google_play(package_name, version_name):
         print(ex)
 
 
-def apkpure(package_name, version_name, path):
+def apkpure(package_name, version_name, path, string):
     server_name = "apkpure"
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
@@ -187,13 +213,13 @@ def apkpure(package_name, version_name, path):
             # print newest versionName exists on web of an app
             if web_version > app_version:
                 print(package_name.rstrip() + ":has an update on " + server_name + " with version name:" + new_version)
-                api.download_from_apkpure(package_name.rstrip(), path=path)
+                api.download_from_apkpure(package_name.rstrip(), path=path, string=string)
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking apkpure")
         print(ex)
 
 
-def myket(package_name, version_name, path):
+def myket(package_name, version_name, path, string):
     url = "https://myket.ir/app/"
     server_name = "myket"
     if version_name == '':
@@ -219,7 +245,7 @@ def myket(package_name, version_name, path):
             print(
                 package_name.rstrip() + ":has an update version on " + server_name +
                 " with version name:" + new_version)
-            api.get_apk_from_myket(package_name.rstrip(), path=path)
+            api.get_apk_from_myket(package_name.rstrip(), path=path, string=string)
     except Exception as ex:
         print(ex)
         print("an error occurred on " + package_name + " in checking on " + server_name)
