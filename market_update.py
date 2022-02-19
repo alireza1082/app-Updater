@@ -4,6 +4,7 @@ import api_downloader as api
 import os
 import requests
 import sys
+import argparse
 
 from bs4 import BeautifulSoup
 from persiantools import digits
@@ -13,16 +14,45 @@ sys.path.append('../')
 
 def main():
     # directory that checks apks on by relative path
-    path = './repo/'
+    parser = arg_parser()
+    args = parser.parse_args()
+    path = args.dir if args.dir else './repo/'
+    file_name = args.name if args.name else ""
+    server = args.serverName if args.serverName else ""
+
     # direct path = '/home/fdroid/market_source/test/repo'
     apk_lists = list(filter(lambda file: file.split('.')[-1] == 'apk', os.listdir(path)))
+
     # use hashmap for remove duplicate packageNames and get the latest versionName
     print(apk_lists)
     apk_hashmap = get_apk_hashmap(apk_lists, path=path)
     print(apk_hashmap)
+
     for package_name, version_name in apk_hashmap.items():
-        apkpure(package_name, version_name)
+        if server == 'apkpure':
+            apkpure(package_name, version_name, path=path)
+        elif server == 'cafebazaar':
+            cafebazaar(package_name, version_name, path=path)
+        elif server == 'myket':
+            myket(package_name, version_name, path=path)
+        elif server == 'google_play':
+            google_play(package_name, version_name, path=path)
+        else:
+            print("downloading with default server cafebazaar")
+            cafebazaar(package_name, version_name, path=path)
     print("finished")
+
+
+def arg_parser():
+    parser = argparse.ArgumentParser(prog="Market Updater",
+                                     description="script for download new versions of apk files.")
+    parser.add_argument('-s', '--serverName', help='choose that server you want to check and download apks from it.',
+                        default='cafebazaar')
+    parser.add_argument('-d', '--dir', help='location of apks and new apk downloads')
+    parser.add_argument('-n', '--name', help='append the string to packageName for apk files name')
+    parser.add_argument('-i', '--id', help='check a single packageName')
+    parser.add_argument('-N', '--Name', help='rename apk file to entered string')
+    return parser
 
 
 def get_apk_hashmap(apk_lists, path):
@@ -57,7 +87,7 @@ def get_apk_hashmap(apk_lists, path):
     return apk_hashmap
 
 
-def cafebazaar(package_name, version_name):
+def cafebazaar(package_name, version_name, path):
     server_name = "cafebazaar"
     url = "https://cafebazaar.ir/app/" + str(package_name)
     if version_name == '':
@@ -85,7 +115,7 @@ def cafebazaar(package_name, version_name):
                 print(
                     package_name.rstrip() + ":has an update version on " + server_name + " with version name:"
                     + new_version)
-                api.get_apk_from_cafe_bazaar(package_name.rstrip())
+                api.get_apk_from_cafe_bazaar(package_name.rstrip(), path=path)
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking cafebazaar")
         print(ex)
@@ -119,7 +149,7 @@ def google_play(package_name, version_name):
         print(ex)
 
 
-def apkpure(package_name, version_name):
+def apkpure(package_name, version_name, path):
     server_name = "apkpure"
     if version_name == '':
         print("VersionName of " + package_name + " is invalid")
@@ -154,13 +184,13 @@ def apkpure(package_name, version_name):
             # print newest versionName exists on web of an app
             if web_version > app_version:
                 print(package_name.rstrip() + ":has an update on " + server_name + " with version name:" + new_version)
-                api.download_from_apkpure(package_name.rstrip())
+                api.download_from_apkpure(package_name.rstrip(), path=path)
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking apkpure")
         print(ex)
 
 
-def myket(package_name, version_name):
+def myket(package_name, version_name, path):
     url = "https://myket.ir/app/"
     server_name = "myket"
     if version_name == '':
@@ -186,7 +216,7 @@ def myket(package_name, version_name):
             print(
                 package_name.rstrip() + ":has an update version on " + server_name +
                 " with version name:" + new_version)
-            api.get_apk_from_myket(package_name.rstrip())
+            api.get_apk_from_myket(package_name.rstrip(), path=path)
     except Exception as ex:
         print(ex)
         print("an error occurred on " + package_name + " in checking on " + server_name)

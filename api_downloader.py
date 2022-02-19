@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from clint.textui import progress
 
 
-def get_apk_from_myket(pkg):
+def get_apk_from_myket(pkg, path):
     url = "https://one-api.ir/myket/"
     # one-api token
     token = '******'
@@ -29,7 +29,7 @@ def get_apk_from_myket(pkg):
     link = response.json()['result']['main']
     # request to download link and creating .apk file
     file = requests.get(link.rstrip(), stream=True, allow_redirects=True)
-    with open('./repo/' + pkg + '.apk', 'wb') as files:
+    with open(path + pkg + '.apk', 'wb') as files:
         # get total length of file from headers of response
         total_length = int(file.headers.get('content-length'))
         for chunk in progress.bar(file.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
@@ -37,13 +37,13 @@ def get_apk_from_myket(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
+    if os.path.getsize(path + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
 
 
-def get_apk_from_cafe_bazaar(pkg):
+def get_apk_from_cafe_bazaar(pkg, path):
     url = "https://one-api.ir/cafebazaar/"
     # one-api token
     token = '******'
@@ -72,7 +72,7 @@ def get_apk_from_cafe_bazaar(pkg):
     link = response.json()['result']['main']
     # request to download link and creating .apk file
     file = requests.get(link.rstrip(), stream=True, allow_redirects=True)
-    with open('./repo/' + pkg + '.apk', 'wb') as files:
+    with open(path + pkg + '.apk', 'wb') as files:
         # get total length of file from headers of response
         total_length = int(file.headers.get('content-length'))
         for chunk in progress.bar(file.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
@@ -80,13 +80,13 @@ def get_apk_from_cafe_bazaar(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
+    if os.path.getsize(path + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
 
 
-def download_from_apkpure(pkg):
+def download_from_apkpure(pkg, path):
     # create base url pf an app in apkpure site
     url = 'https://m.apkpure.com/store/apps/details?id='
     resp = requests.get(url + pkg)
@@ -111,7 +111,7 @@ def download_from_apkpure(pkg):
         return
     # request to download link and creating .apk file
     file = requests.get(download_link, stream=True, allow_redirects=True)
-    with open('./repo/' + pkg + '.apk', 'wb') as files:
+    with open(path + pkg + '.apk', 'wb') as files:
         # get total length of file from headers of response
         total_length = int(file.headers.get('content-length'))
         for chunk in progress.bar(file.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
@@ -119,7 +119,7 @@ def download_from_apkpure(pkg):
                 files.write(chunk)
                 sys.stdout.flush()
     # check if download is successful or not
-    if os.path.getsize('./repo/' + pkg + '.apk') == total_length:
+    if os.path.getsize(path + pkg + '.apk') == total_length:
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
