@@ -23,9 +23,9 @@ def get_apk_from_myket(pkg, path, string):
             return
         else:
             print("downloading : " + pkg)
-    # else:
-    #     print("download " + pkg + " failed")
-    #     return
+    else:
+        print("download " + pkg + " failed")
+        return
     link = response.json()['result']['main']
     # request to download link and creating .apk file
     file = requests.get(link.rstrip(), stream=True, allow_redirects=True)

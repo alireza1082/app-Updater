@@ -1,12 +1,13 @@
 # coding= utf-8
 
-__version__ = '1.1.0'
+__version_prog__ = '1.1.0'
 
 import api_downloader as api
 import os
 import requests
 import sys
 import argparse
+import time
 
 from bs4 import BeautifulSoup
 from persiantools import digits
@@ -18,12 +19,14 @@ def main():
     parser = arg_parser()
     args = parser.parse_args()
     # directory that checks apks on by relative path
-    path = args.dir if args.dir else './repo/'
-    append = args.string if args.string else ""
-    server = args.serverName if args.serverName else ""
+    path = args.dir[0].rstrip() if args.dir else './repo/'
+    append = args.string.rstrip() if args.string else ""
+    server = args.serverName if args.serverName else "cafebazaar"
+    if server != "cafebazaar":
+        server = args.serverName[0].rstrip()
 
     if args.id:
-        single_download(server, args.id, path, append)
+        single_download(server.rstrip(), args.id, path, append)
         return
 
     # direct path = '/home/fdroid/market_source/test/repo'
@@ -34,23 +37,24 @@ def main():
     apk_hashmap = get_apk_hashmap(apk_lists, path=path)
     print(apk_hashmap)
 
+    print("downloading with server " + server)
+
     for package_name, version_name in apk_hashmap.items():
         if server == 'apkpure':
-            print("downloading with server apkpure")
+            # os.popen("sudo route add -net 192.168.0.0 gw 192.168.1.1 netmask 255.255.192.0 dev ens18 metric 1")
+            # try_reach_apkpure(4)
             apkpure(package_name, version_name, path=path, string=append)
         elif server == 'cafebazaar':
-            print("downloading with server cafebazaar")
             cafebazaar(package_name, version_name, path=path, string=append)
         elif server == 'myket':
-            print("downloading with server myket")
             myket(package_name, version_name, path=path, string=append)
         elif server == 'google_play':
-            print("downloading with server google_play")
             google_play(package_name, version_name)
         else:
             print("downloading with default server cafebazaar")
             cafebazaar(package_name, version_name, path=path, string=append)
     print("finished")
+    os.popen("sudo fdroid update -c")
 
 
 def arg_parser():
@@ -58,12 +62,39 @@ def arg_parser():
                                      description="script for download new versions of apk files.")
     parser.add_argument('-s', '--serverName', help='choose that server you want to check and download apks from it.',
                         default='cafebazaar', nargs=1, choices=['apkpure', 'cafebazaar', 'myket', 'google_play'])
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version_prog__)
     parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
     parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
     parser.add_argument('-N', '--Name', help='rename apk file to entered string')
     return parser
+
+
+def check_reaching_apkpure():
+    try:
+        url = "https://m.apkpure.com"
+        resp = requests.get(url, timeout=3)
+        if resp.status_code == 403:
+            print("you can't reach to apkpure servers")
+            return False
+    except Exception as ex:
+        print("apkpure is note reachable.")
+        print(ex)
+        return False
+    return True
+
+
+def try_reach_apkpure(tries):
+    tried_times = 0
+    while tries > tried_times:
+        if check_reaching_apkpure():
+            return True
+        else:
+            print("trying connect to apkpure.com try num: " + str(tried_times))
+            if tried_times == 0:
+                os.popen("occ boa")
+            tried_times += 1
+            time.sleep(6)
 
 
 def single_download(server, package_name, path, append):
@@ -127,12 +158,12 @@ def cafebazaar(package_name, version_name, path, string):
         # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
         app_version = list(map(int, version_name.split('.')))
         # arrange file by html tags
-        soup = BeautifulSoup(resp.text, features="lxml").find("div", {"class": "AppSubtitles"}).next
-        version = soup.text
-        print(version)
         if resp.status_code == 404:
             print(package_name.strip() + " is not exists on " + server_name)
-        elif version is not None:
+            return
+        soup = BeautifulSoup(resp.text, features="lxml").find("div", {"class": "AppSubtitles"}).next
+        version = soup.text
+        if version is not None:
             version_en = digits.fa_to_en(version.rstrip())
             # check version name if it has words and remove words
             new_version = ''.join((ch if ch in '0123456789.' else '') for ch in version_en)
@@ -230,6 +261,9 @@ def myket(package_name, version_name, path, string):
         # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
         app_version = list(map(int, version_name.split('.')))
         resp = requests.get(url)
+        if resp.status_code == 404:
+            print(package_name.strip() + " is not exists on " + server_name)
+            return
         # arrange file by html tags
         soup = BeautifulSoup(resp.text, 'html.parser')
         # get version by text of before element
