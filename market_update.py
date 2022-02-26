@@ -54,7 +54,9 @@ def main():
             print("downloading with default server cafebazaar")
             cafebazaar(package_name, version_name, path=path, string=append)
     print("finished")
-    os.popen("sudo fdroid update -c")
+    if args.update:
+        print("updating server")
+        os.popen("sudo fdroid update -c")
 
 
 def arg_parser():
@@ -67,6 +69,7 @@ def arg_parser():
     parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
     parser.add_argument('-N', '--Name', help='rename apk file to entered string')
+    parser.add_argument('update', help='update server after update')
     return parser
 
 
