@@ -21,12 +21,13 @@ def main():
     # directory that checks apks on by relative path
     path = args.dir[0].rstrip() if args.dir else './repo/'
     append = args.string.rstrip() if args.string else ""
+    single_append = args.Name.rstrip() if args.Name else ""
     server = args.serverName if args.serverName else "cafebazaar"
     if server != "cafebazaar":
         server = args.serverName[0].rstrip()
 
     if args.id:
-        single_download(server.rstrip(), args.id, path, append)
+        single_download(server.rstrip(), args.id, path, single_append)
         return
 
     # direct path = '/home/fdroid/market_source/test/repo'
@@ -66,7 +67,7 @@ def arg_parser():
     parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
     parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
-    parser.add_argument('-N', '--Name', help='rename apk file to entered string')
+    parser.add_argument('-N', '--Name', nargs=1, help='rename apk file to entered string')
     return parser
 
 
