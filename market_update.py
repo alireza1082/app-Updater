@@ -175,7 +175,7 @@ def cafebazaar(package_name, version_name, path, string):
             web_version = list(map(int, new_version.split('.')))
             print(package_name.rstrip() + " checked on " + server_name)
             # print newest versionName exists on web of an app
-            if web_version > app_version:
+            if check_version(web_version, app_version):
                 print(
                     package_name.rstrip() + ":has an update version on " + server_name + " with version name:"
                     + new_version)
@@ -246,7 +246,7 @@ def apkpure(package_name, version_name, path, string):
             web_version = list(map(int, new_version.split('.')))
             print(package_name.rstrip() + " checked on " + server_name)
             # print newest versionName exists on web of an app
-            if web_version > app_version:
+            if check_version(web_version, app_version):
                 print(package_name.rstrip() + ":has an update on " + server_name + " with version name:" + new_version)
                 api.download_from_apkpure(package_name.rstrip(), path=path, string=string)
     except Exception as ex:
@@ -279,7 +279,7 @@ def myket(package_name, version_name, path, string):
         web_version = list(map(int, new_version.split('.')))
         print(package_name.rstrip() + " checked on " + server_name)
         # print newest versionName exists on web of an app
-        if web_version > app_version:
+        if check_version(web_version, app_version):
             print(
                 package_name.rstrip() + ":has an update version on " + server_name +
                 " with version name:" + new_version)
@@ -287,6 +287,14 @@ def myket(package_name, version_name, path, string):
     except Exception as ex:
         print(ex)
         print("an error occurred on " + package_name + " in checking on " + server_name)
+
+
+def check_version(web_version, app_version):
+    if web_version[0] > app_version[0]:
+        return True
+    if web_version > app_version:
+        return True
+    return False
 
 
 if __name__ == '__main__':
