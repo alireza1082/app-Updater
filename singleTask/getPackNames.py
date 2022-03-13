@@ -3,7 +3,7 @@ import os
 
 def main():
     # directory that checks apks on by relative path
-    path = './repo/'
+    path = '../repo/'
     # direct path = '/home/fdroid/market_source/test/repo'
     apk_lists = list(filter(lambda file: file.split('.')[-1] == 'apk', os.listdir(path)))
     # use hashmap for remove duplicate packageNames and get the latest versionName
