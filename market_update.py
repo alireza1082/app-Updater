@@ -20,6 +20,7 @@ def main():
     # directory that checks apks on by relative path
     path = args.dir[0].rstrip() if args.dir else './repo/'
     append = args.string.rstrip() if args.string else ""
+    verbose = True if args.v else False
     single_append = args.Name.rstrip() if args.Name else ""
     server = args.serverName if args.serverName else "cafebazaar"
     if server != "cafebazaar":
@@ -68,7 +69,8 @@ def arg_parser():
     parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
     parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', help='check a single packageName')
-    parser.add_argument('update', help='update server after update')
+    parser.add_argument('--update', help='update server after update')
+    parser.add_argument('-v', help="verbose logs")
     parser.add_argument('-N', '--Name', nargs=1, help='rename apk file to entered string')
     return parser
 
@@ -147,6 +149,7 @@ def get_apk_hashmap(apk_lists, path):
     except Exception as ex:
         print("an error occurred on " + new_package_name)
         print(ex)
+    print(len(apk_hashmap))
     return apk_hashmap
 
 
