@@ -5,12 +5,9 @@ from bs4 import BeautifulSoup
 from persiantools import digits
 
 
-def get_cafebazaar_version(package_name, version_name):
+def get_cafebazaar_version(package_name):
     server_name = "cafebazaar"
     url = "https://cafebazaar.ir/app/" + str(package_name)
-    if version_name == '':
-        print("VersionName of " + package_name + " is invalid")
-        return 0
     try:
         resp = requests.get(url.rstrip())
         # arrange file by html tags
@@ -32,16 +29,11 @@ def get_cafebazaar_version(package_name, version_name):
         print(ex)
 
 
-def get_myket_version(package_name, version_name):
+def get_myket_version(package_name):
     url = "https://myket.ir/app/"
     server_name = "myket"
-    if version_name == '':
-        print("VersionName of " + package_name + " is invalid")
-        return 0
     try:
         url = url + package_name
-        # newVersionName = ''.join((ch if ch in '0123456789.' else '') for ch in VersionName)
-        app_version = list(map(int, version_name.split('.')))
         resp = requests.get(url)
         if resp.status_code == 404:
             print(package_name.strip() + " is not exists on " + server_name)
@@ -56,6 +48,25 @@ def get_myket_version(package_name, version_name):
         # build array of versionName split by .
         print(package_name.rstrip() + " checked on " + server_name)
         return new_version
+    except Exception as ex:
+        print("an error occurred on " + package_name + " in checking " + server_name)
+        print(ex)
+
+
+def get_fdroid_version(package_name):
+    url = "https://f-droid.org/en/packages/"
+    server_name = "F-droid"
+    try:
+        url = url + package_name
+        resp = requests.get(url)
+        if resp.status_code == 404:
+            print(package_name.strip() + " is not exists on " + server_name)
+            return 0
+        # arrange file by html tags
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        version = soup.find("div", {"class": "package-version-header"}).find("a")['name']
+        link = soup.find("p", {"class": "package-version-download"}).find("a")['href']
+        return [version, link]
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking " + server_name)
         print(ex)

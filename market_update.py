@@ -49,6 +49,8 @@ def main():
             cafebazaar(package_name, version_name, path=path, string=append)
         elif server == 'myket':
             myket(package_name, version_name, path=path, string=append)
+        elif server == 'fdroid':
+            fdroid(package_name, version_name, path=path, string=append)
         elif server == 'google_play':
             google_play(package_name, version_name)
         else:
@@ -63,14 +65,17 @@ def main():
 def arg_parser():
     parser = argparse.ArgumentParser(prog="Market Updater",
                                      description="script for download new versions of apk files.")
-    parser.add_argument('-s', '--serverName', help='choose that server you want to check and download apks from it.',
-                        default='cafebazaar', nargs=1, choices=['apkpure', 'cafebazaar', 'myket', 'google_play'])
+    parser.add_argument('-s', '--serverName',
+                        help='choose that server you want to check and download apks from it.',
+                        default='cafebazaar', nargs=1,
+                        choices=['apkpure', 'cafebazaar', 'myket', 'google_play', 'fdroid'])
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version_prog__)
     parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
-    parser.add_argument('-a', '--string', help='append the string to packageName for apk files name')
-    parser.add_argument('-i', '--id', help='check a single packageName')
-    parser.add_argument('--update', help='update server after update')
-    parser.add_argument('-v', help="verbose logs")
+    parser.add_argument('-a', '--string', type=str,
+                        help='append the string to packageName for apk files name')
+    parser.add_argument('-i', '--id', type=str, help='check a single packageName')
+    parser.add_argument('--update', action='update server', help='update server after update')
+    parser.add_argument('-v', action='verbose mode', help="verbose logs")
     parser.add_argument('-N', '--Name', nargs=1, help='rename apk file to entered string')
     return parser
 
@@ -112,6 +117,10 @@ def single_download(server, package_name, path, append):
     elif server == 'myket':
         print("downloading with server myket")
         api.get_apk_from_myket(package_name.rstrip(), path=path, string=append)
+    elif server == 'fdroid':
+        print("downloading with server fdroid")
+        download_link = checker.get_fdroid_version(package_name=package_name.rstrip)[1]
+        api.download_from_fdroid(package_name.rstrip(), download_link, path=path, string=append)
     elif server == 'google_play':
         print("downloading with server google_play")
         google_play(package_name, "0")
@@ -155,11 +164,14 @@ def get_apk_hashmap(apk_lists, path):
 
 def cafebazaar(package_name, version_name, path, string):
     server_name = "cafebazaar"
+    if version_name == '':
+        print("VersionName of " + package_name + " is invalid")
+        return
     try:
         version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name)
         app_version = list(map(int, version_name.split('.')))
         # build array of versionName split by .
-        new_version = checker.get_cafebazaar_version(package_name, version_name)
+        new_version = checker.get_cafebazaar_version(package_name)
         if new_version == 0:
             return
         web_version = list(map(int, new_version.split('.')))
@@ -243,10 +255,13 @@ def apkpure(package_name, version_name, path, string):
 
 def myket(package_name, version_name, path, string):
     server_name = "myket"
+    if version_name == '':
+        print("VersionName of " + package_name + " is invalid")
+        return
     try:
         version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name)
         app_version = list(map(int, version_name.split('.')))
-        new_version = checker.get_myket_version(package_name, version_name)
+        new_version = checker.get_myket_version(package_name)
         if new_version == 0:
             return
         web_version = list(map(int, new_version.split('.')))
@@ -255,6 +270,28 @@ def myket(package_name, version_name, path, string):
             print(package_name.rstrip() + ":has an update version on " + server_name +
                   " with version name:" + new_version)
             api.get_apk_from_myket(package_name.rstrip(), path=path, string=string)
+    except Exception as ex:
+        print(ex)
+        print("an error occurred on " + package_name + " in checking on " + server_name)
+
+
+def fdroid(package_name, version_name, path, string):
+    server_name = "fdroid"
+    if version_name == '':
+        print("VersionName of " + package_name + " is invalid")
+        return
+    try:
+        version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name)
+        app_version = list(map(int, version_name.split('.')))
+        app = checker.get_fdroid_version(package_name)
+        if app[0] == 0:
+            return
+        web_version = list(map(int, app[0].split('.')))
+        # print newest versionName exists on web of an app
+        if check_version(web_version, app_version):
+            print(package_name.rstrip() + ":has an update version on " + server_name +
+                  " with version name:" + app[0])
+            api.download_from_fdroid(package_name.rstrip(), app[1], path=path, string=string)
     except Exception as ex:
         print(ex)
         print("an error occurred on " + package_name + " in checking on " + server_name)

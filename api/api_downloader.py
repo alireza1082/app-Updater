@@ -123,3 +123,19 @@ def download_from_apkpure(pkg, path, string):
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
+
+
+def download_from_fdroid(pkg, download_link, path, string):
+    file = requests.get(download_link, stream=True, allow_redirects=True)
+    with open(path + pkg + string + '.apk', 'wb') as files:
+        # get total length of file from headers of response
+        total_length = int(file.headers.get('content-length'))
+        for chunk in progress.bar(file.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
+            if chunk:
+                files.write(chunk)
+                sys.stdout.flush()
+    # check if download is successful or not
+    if os.path.getsize(path + pkg + string + '.apk') == total_length:
+        print(pkg + " downloaded successfully")
+    else:
+        print(pkg + " download failed")
