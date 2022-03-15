@@ -119,7 +119,9 @@ def single_download(server, package_name, path, append):
         api.get_apk_from_myket(package_name.rstrip(), path=path, string=append)
     elif server == 'fdroid':
         print("downloading with server fdroid")
-        app = checker.get_fdroid_version(package_name=package_name.rstrip)
+        app = checker.get_fdroid_version(package_name=package_name.rstrip())
+        if app == 0:
+            return
         web_version = ''.join((ch if ch in '0123456789.' else '') for ch in app[0]).rstrip()
         web_version = list(map(int, web_version.split('.')))
         if check_version(web_version=web_version, app_version=get_single_app_version(package_name, path)):
@@ -289,7 +291,7 @@ def fdroid(package_name, version_name, path, string):
         version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name)
         app_version = list(map(int, version_name.split('.')))
         app = checker.get_fdroid_version(package_name)
-        if app[0] == 0:
+        if app == 0:
             return
         web_version = list(map(int, app[0].split('.')))
         # print newest versionName exists on web of an app
