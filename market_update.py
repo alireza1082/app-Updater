@@ -69,13 +69,13 @@ def arg_parser():
                         help='choose that server you want to check and download apks from it.',
                         default='cafebazaar', nargs=1,
                         choices=['apkpure', 'cafebazaar', 'myket', 'google_play', 'fdroid'])
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version_prog__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version_prog__)
     parser.add_argument('-d', '--dir', nargs=1, help='location of apks and new apk downloads')
     parser.add_argument('-a', '--string', type=str,
                         help='append the string to packageName for apk files name')
     parser.add_argument('-i', '--id', type=str, help='check a single packageName')
-    parser.add_argument('--update', action='update server', help='update server after update')
-    parser.add_argument('-v', action='verbose mode', help="verbose logs")
+    parser.add_argument('update', help='update server after update')
+    parser.add_argument('-v', help="verbose logs")
     parser.add_argument('-N', '--Name', nargs=1, help='rename apk file to entered string')
     return parser
 
@@ -119,8 +119,13 @@ def single_download(server, package_name, path, append):
         api.get_apk_from_myket(package_name.rstrip(), path=path, string=append)
     elif server == 'fdroid':
         print("downloading with server fdroid")
-        download_link = checker.get_fdroid_version(package_name=package_name.rstrip)[1]
-        api.download_from_fdroid(package_name.rstrip(), download_link, path=path, string=append)
+        app = checker.get_fdroid_version(package_name=package_name.rstrip)
+        web_version = ''.join((ch if ch in '0123456789.' else '') for ch in app[0]).rstrip()
+        web_version = list(map(int, web_version.split('.')))
+        if check_version(web_version=web_version, app_version=get_single_app_version(package_name, path)):
+            api.download_from_fdroid(package_name.rstrip(), app[1], path=path, string=append)
+        else:
+            print("server hasn't newer version")
     elif server == 'google_play':
         print("downloading with server google_play")
         google_play(package_name, "0")
@@ -304,6 +309,13 @@ def check_version(web_version, app_version):
     if web_version > app_version:
         return True
     return False
+
+
+def get_single_app_version(package_name, path):
+    version_name = os.popen("aapt dump badging " + path + package_name
+                            + "| grep VersionName | sed -e \"s/.*versionName='//\" ""-e \"s/' .*//\"").read()
+    version_name = ''.join((ch if ch in '0123456789.' else '') for ch in version_name)
+    return list(map(int, version_name.split('.')))
 
 
 if __name__ == '__main__':
