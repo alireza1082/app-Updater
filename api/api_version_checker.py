@@ -27,6 +27,7 @@ def get_cafebazaar_version(package_name):
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking " + server_name)
         print(ex)
+        return 0
 
 
 def get_myket_version(package_name):
@@ -51,6 +52,7 @@ def get_myket_version(package_name):
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking " + server_name)
         print(ex)
+        return 0
 
 
 def get_fdroid_version(package_name):
@@ -70,3 +72,4 @@ def get_fdroid_version(package_name):
     except Exception as ex:
         print("an error occurred on " + package_name + " in checking " + server_name)
         print(ex)
+        return 0
