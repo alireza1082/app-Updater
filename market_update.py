@@ -293,7 +293,8 @@ def fdroid(package_name, version_name, path, string):
         app = checker.get_fdroid_version(package_name)
         if app == 0:
             return
-        web_version = list(map(int, app[0].split('.')))
+        web_version = ''.join((ch if ch in '0123456789.' else '') for ch in app[0])
+        web_version = list(map(int, web_version.split('.')))
         # print newest versionName exists on web of an app
         if check_version(web_version, app_version):
             print(package_name.rstrip() + ":has an update version on " + server_name +
