@@ -21,7 +21,7 @@ def main():
     path = args.dir[0].rstrip() if args.dir else './repo/'
     append = args.string.rstrip() if args.string else ""
     verbose = True if args.v else False
-    single_append = args.Name.rstrip() if args.Name else ""
+    single_append = args.Name[0].rstrip() if args.Name else ""
     server = args.serverName if args.serverName else "cafebazaar"
     if server != "cafebazaar":
         server = args.serverName[0].rstrip()
