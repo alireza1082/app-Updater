@@ -14,8 +14,11 @@ def get_cafebazaar_version(package_name):
         if resp.status_code == 404:
             print(package_name.strip() + " is not exists on " + server_name)
             return 0
-        soup = BeautifulSoup(resp.text, features="lxml").find("div", {"class": "AppSubtitles"}).next
-        version = soup.text
+        soup = BeautifulSoup(resp.text, features="lxml").find("div", {"class": "AppSubtitles"})
+        if soup is None:
+            print(package_name.strip() + " is not exists on " + server_name)
+            return 0
+        version = soup.next.text
         if version is not None:
             version_en = digits.fa_to_en(version.rstrip())
             # check version name if it has words and remove words
@@ -73,3 +76,6 @@ def get_fdroid_version(package_name):
         print("an error occurred on " + package_name + " in checking " + server_name)
         print(ex)
         return 0
+
+
+get_cafebazaar_version("com.keylesspalace.tusky")

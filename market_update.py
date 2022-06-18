@@ -47,6 +47,7 @@ def main():
             apkpure(package_name, version_name, path=path, string=append)
         elif server == 'cafebazaar':
             cafebazaar(package_name, version_name, path=path, string=append)
+            time.sleep(1)
         elif server == 'myket':
             myket(package_name, version_name, path=path, string=append)
         elif server == 'fdroid':
@@ -56,6 +57,7 @@ def main():
         else:
             print("downloading with default server cafebazaar")
             cafebazaar(package_name, version_name, path=path, string=append)
+            time.sleep(1)
     print("finished")
     if args.update:
         print("updating server")
