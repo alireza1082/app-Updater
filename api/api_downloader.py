@@ -105,8 +105,8 @@ def download_from_apkpure(pkg, path, string):
     else:
         print("download " + pkg + " failed")
         return
-    form = soup2.find("span", {"class": "file"}).text
-    if form.find("xapk") != -1:
+    form = soup2.find("div", {"class": "info-title"}).text
+    if form.find("XAPK") != -1:
         print(pkg + " has no compatible format to download")
         return
     # request to download link and creating .apk file
