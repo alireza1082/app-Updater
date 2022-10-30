@@ -91,22 +91,22 @@ def download_from_apkpure(pkg, path, string):
     url = 'https://m.apkpure.com/store/apps/details?id='
     resp = requests.get(url + pkg)
     soup = BeautifulSoup(resp.text, 'html.parser')
-    temp = soup.find("a", {"class": "da"})
+    temp = soup.find("a", {"class": "go-to-download"})
     link = temp.get('href')
     # create second url page of an app for getting download link of the apk
     link2 = 'https://m.apkpure.com' + link
     response = requests.get(link2.rstrip(), stream=True, allow_redirects=True)
     soup2 = BeautifulSoup(response.text, 'html.parser')
     # get download link
-    download_link = soup2.find("a", {"id": "download_link"}).get('href')
+    download_link = soup2.find("a", {"class": "download-start-btn"}).get('href')
     # check app is available on market
     if response.status_code == 200:
         print("downloading : " + pkg)
     else:
         print("download " + pkg + " failed")
         return
-    form = soup2.find("div", {"class": "info-title"}).text
-    if form.find("XAPK") != -1:
+    form = soup2.find("span", {"class": "info-tag"}).text
+    if form.find("XAPK") != -1 or form.find("xapk") != -1:
         print(pkg + " has no compatible format to download")
         return
     # request to download link and creating .apk file
