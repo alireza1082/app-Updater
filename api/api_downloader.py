@@ -92,6 +92,8 @@ def download_from_apkpure(pkg, path, string):
     resp = requests.get(url + pkg)
     soup = BeautifulSoup(resp.text, 'html.parser')
     temp = soup.find("a", {"class": "download_apk_news da no-right-radius"})
+    if temp is None:
+        temp = soup.find("a", {"class": "go-to-download"})
     link = temp.get('href')
     # create second url page of an app for getting download link of the apk
     link2 = 'https://m.apkpure.com' + link
@@ -106,6 +108,7 @@ def download_from_apkpure(pkg, path, string):
         print("download " + pkg + " failed")
         return
     form = soup2.find("a", {"class": "info-tag"}).text.upper()
+    print(form)
     if form.find("XAPK") != -1:
         print(pkg + " has no compatible format to download")
         return
@@ -139,3 +142,6 @@ def download_from_fdroid(pkg, download_link, path, string):
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
+
+
+download_from_apkpure("com.microsoft.emmx", "./", "")
