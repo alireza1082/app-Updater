@@ -98,7 +98,7 @@ def download_from_apkpure(pkg, path, string):
     response = requests.get(link2.rstrip(), stream=True, allow_redirects=True)
     soup2 = BeautifulSoup(response.text, 'html.parser')
     # get download link
-    download_link = soup2.find("a", {"class": "download-start-btn"}).get('href')
+    download_link = soup2.find("a", {"class": "download-start-btn pc-download-btn ga"}).get('href')
     # check app is available on market
     if response.status_code == 200:
         print("downloading : " + pkg)
