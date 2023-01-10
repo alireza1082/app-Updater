@@ -142,6 +142,3 @@ def download_from_fdroid(pkg, download_link, path, string):
         print(pkg + " downloaded successfully")
     else:
         print(pkg + " download failed")
-
-
-download_from_apkpure("com.microsoft.emmx", "./", "")
