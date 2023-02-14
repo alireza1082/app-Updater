@@ -244,6 +244,9 @@ def apkpure(package_name, version_name, path, string):
         if resp.status_code == 404:
             print(package_name.strip() + " is not exists on " + server_name)
         else:
+            if soup.find("div", {"class": "p404"}) is not None:
+                print(package_name + " is not exists on apkpure")
+                return
             tag = soup.find("span", {"itemprop": "version"})
             version = tag.text.rstrip()
             if version is None:

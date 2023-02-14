@@ -95,7 +95,7 @@ def download_from_apkpure(pkg, path, string):
     if temp is None:
         temp = soup.find("a", {"class": "go-to-download"})
     if temp is None:
-        print(pkg + "is not exists on apkpure, it's a trap:)")
+        print(pkg + " is not exists on apkpure, it's a trap:)")
         return
     link = temp.get('href')
     # create second url page of an app for getting download link of the apk
