@@ -1,7 +1,7 @@
+import os
 import sys
 
 import requests
-import os
 from bs4 import BeautifulSoup
 from clint.textui import progress
 
@@ -71,7 +71,8 @@ def get_apk_from_cafe_bazaar(pkg, path, string):
     #     return
     link = response.json()['result']['main']
     # request to download link and creating .apk file
-    file = requests.get(link.rstrip(), stream=True, allow_redirects=True)
+    print(link)
+    file = requests.get(link[0].rstrip(), stream=True, allow_redirects=True)
     with open(path + pkg + string + '.apk', 'wb') as files:
         # get total length of file from headers of response
         total_length = int(file.headers.get('content-length'))

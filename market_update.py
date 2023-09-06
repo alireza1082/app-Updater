@@ -2,14 +2,15 @@
 
 __version_prog__ = '1.1.0'
 
-from api import api_version_checker as checker, api_downloader as api
-import os
-import requests
-import sys
 import argparse
+import os
+import sys
 import time
 
+import requests
 from bs4 import BeautifulSoup
+
+from api import api_version_checker as checker, api_downloader as api
 
 sys.path.append('../')
 
